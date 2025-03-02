@@ -1,3 +1,48 @@
+/* Stickers positioning with rotation and variable sizes */
+.sticker {
+    position: absolute;
+    opacity: 0.8;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  /* Variable sizes */
+  .sticker.left.top {
+    top: 10%;
+    left: 5%;
+    width: 280px;
+  }
+  
+  .sticker.left.bottom {
+    bottom: 10%;
+    left: 5%;
+    width: 120px;
+  }
+  
+  .sticker.right.top {
+    top: 10%;
+    right: 5%;
+    width: 190px;
+  }
+  
+  .sticker.right.bottom {
+    bottom: 10%;
+    right: 5%;
+    width: 210px;
+  }
+  
+  /* Rotation effects */
+  .rotate-small {
+    transform: rotate(-10deg);
+  }
+  
+  .rotate-medium {
+    transform: rotate(15deg);
+  }
+  
+  .rotate-large {
+    transform: rotate(-20deg);
+  }
+
 /* Import a beautiful Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
@@ -35,7 +80,7 @@ body {
   padding: 15px;
   border-radius: 10px;
   box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
-  min-height: 150px;
+  min-height: 350px;
   max-height: 60vh;
   overflow-y: auto;
   transition: all 0.3s ease;

@@ -17,6 +17,11 @@ export default function TranscriptApp() {
 
   return (
     <div className="app-container">
+      <img src="/stickers/couple.png" className="sticker left top rotate-small" alt="Sticker" />
+      <img src="/stickers/heart.png" className="sticker left bottom rotate-large" alt="Sticker" />
+      <img src="/stickers/couple2.png" className="sticker right top rotate-medium" alt="Sticker" />
+      <img src="/stickers/letters.png" className="sticker right bottom rotate-small" alt="Sticker" />
+      
       <h1 className="title">Scam-Shield</h1>
       <div className="transcript-box">
         {transcripts.length === 0 ? (
