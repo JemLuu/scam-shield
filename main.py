@@ -15,10 +15,11 @@ load_dotenv()
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 PORT = int(os.getenv('PORT', 5050))
 SYSTEM_MESSAGE = (
-    "You are a helpful and bubbly AI assistant who loves to chat about "
-    "anything the user is interested in and is prepared to offer them facts. "
-    "You have a penchant for dad jokes, owl jokes, and rickrolling – subtly. "
-    "Always stay positive, but work in a joke when appropriate."
+    "You are an AI assistant that needs to determine if a call is a scam or not."
+    "Echo exactly what the user says to you and label the text as scam or not scam." 
+    "Respond strictly with \'(Scam) *insert scam message*\' if it is a scam and \'(Not Scam) *insert regular message*\' if it isn't without the quotes."
+    "Scam calls typically include phrases like: urgent, limited time offer, personal information, bank account issue, IRS, lottery winner, free prize, technical support, credit card fraud alert, suspicious activity, immediate action needed, and your account is at risk."
+    "Other phrases could be you won, claim your prize, now, immediate, action required, suspicious activity detected, pay now, avoid legal action, final notice, debt collection, confirm your details, limited time offer, send payment"
 )
 VOICE = 'alloy'
 LOG_EVENT_TYPES = [
@@ -34,6 +35,26 @@ app = FastAPI()
 if not OPENAI_API_KEY:
     raise ValueError('Missing the OpenAI API key. Please set it in the .env file.')
 
+clients = set()
+
+@app.websocket("/ws/transcripts")
+async def transcript_ws(websocket: WebSocket):
+    await websocket.accept()
+    clients.add(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except:
+        clients.remove(websocket)
+
+async def broadcast_transcript(transcript):
+    """Send transcript to all connected clients"""
+    for client in clients:
+        try:
+            await client.send_text(json.dumps(transcript))
+        except:
+            clients.remove(client)
+
 @app.get("/", response_class=JSONResponse)
 async def index_page():
     return {"message": "Twilio Media Stream Server is running!"}
@@ -43,9 +64,7 @@ async def handle_incoming_call(request: Request):
     """Handle incoming call and return TwiML response to connect to Media Stream."""
     response = VoiceResponse()
     # <Say> punctuation to improve text-to-speech flow
-    response.say("Please wait while we connect your call to the A. I. voice assistant, powered by Twilio and the Open-A.I. Realtime API")
-    response.pause(length=1)
-    response.say("O.K. you can start talking!")
+    response.say("This call has scam detection")
     host = request.url.hostname
     connect = Connect()
     connect.stream(url=f'wss://{host}/media-stream')
@@ -107,24 +126,29 @@ async def handle_media_stream(websocket: WebSocket):
             try:
                 async for openai_message in openai_ws:
                     response = json.loads(openai_message)
-                    if response['type'] in LOG_EVENT_TYPES:
-                        print(f"Received event: {response['type']}", response)
-
+                    # if response['type'] in LOG_EVENT_TYPES:
+                    #     print(f"Received event: {response['type']}", response)
+                    if response.get('type') == 'response.done':
+                        # Extracting the transcript from the response
+                        output_items = response.get('response', {}).get('output', [])
+                        
+                        for item in output_items:
+                            if response.get('type') == 'response.done':
+                                for item in response.get('response', {}).get('output', []):
+                                    if item.get('type') == 'message' and 'content' in item:
+                                        for content in item['content']:
+                                            if content.get('type') == 'audio' and 'transcript' in content:
+                                                transcript_text = content['transcript']
+                                                print("Transcript:", transcript_text)
+                                                await broadcast_transcript(transcript_text)
                     if response.get('type') == 'response.audio.delta' and 'delta' in response:
                         audio_payload = base64.b64encode(base64.b64decode(response['delta'])).decode('utf-8')
-                        audio_delta = {
-                            "event": "media",
-                            "streamSid": stream_sid,
-                            "media": {
-                                "payload": audio_payload
-                            }
-                        }
-                        await websocket.send_json(audio_delta)
+                        # print(audio_payload)
 
                         if response_start_timestamp_twilio is None:
                             response_start_timestamp_twilio = latest_media_timestamp
-                            if SHOW_TIMING_MATH:
-                                print(f"Setting start timestamp for new response: {response_start_timestamp_twilio}ms")
+                            # if SHOW_TIMING_MATH:
+                                # print(f"Setting start timestamp for new response: {response_start_timestamp_twilio}ms")
 
                         # Update last_assistant_item safely
                         if response.get('item_id'):
@@ -134,9 +158,9 @@ async def handle_media_stream(websocket: WebSocket):
 
                     # Trigger an interruption. Your use case might work better using `input_audio_buffer.speech_stopped`, or combining the two.
                     if response.get('type') == 'input_audio_buffer.speech_started':
-                        print("Speech started detected.")
+                        # print("Speech started detected.")
                         if last_assistant_item:
-                            print(f"Interrupting response with id: {last_assistant_item}")
+                            # print(f"Interrupting response with id: {last_assistant_item}")
                             await handle_speech_started_event()
             except Exception as e:
                 print(f"Error in send_to_twilio: {e}")
@@ -144,7 +168,7 @@ async def handle_media_stream(websocket: WebSocket):
         async def handle_speech_started_event():
             """Handle interruption when the caller's speech starts."""
             nonlocal response_start_timestamp_twilio, last_assistant_item
-            print("Handling speech started event.")
+            # print("Handling speech started event.")
             if mark_queue and response_start_timestamp_twilio is not None:
                 elapsed_time = latest_media_timestamp - response_start_timestamp_twilio
                 if SHOW_TIMING_MATH:
@@ -216,7 +240,7 @@ async def initialize_session(openai_ws):
             "temperature": 0.8,
         }
     }
-    print('Sending session update:', json.dumps(session_update))
+    # print('Sending session update:', json.dumps(session_update))
     await openai_ws.send(json.dumps(session_update))
 
     # Uncomment the next line to have the AI speak first
