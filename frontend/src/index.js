@@ -1,10 +1,10 @@
 import React from "react";
-import ReactDOM from "react-dom/client"; // Use createRoot from React 18
-import TranscriptApp from "./TranscriptApp";
+import ReactDOM from "react-dom/client";
+import App from "./App"; // Load the Router and pages
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <TranscriptApp />
+    <App />
   </React.StrictMode>
 );

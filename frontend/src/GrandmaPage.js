@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./styles.css"; // Import the CSS file
 
-export default function TranscriptApp() {
+export default function GrandmaPage() {
   const [transcripts, setTranscripts] = useState([]);
 
   useEffect(() => {
@@ -22,7 +22,10 @@ export default function TranscriptApp() {
       <img src="/stickers/couple2.png" className="sticker right top rotate-medium" alt="Sticker" />
       <img src="/stickers/letters.png" className="sticker right bottom rotate-small" alt="Sticker" />
       
-      <h1 className="title">Scam-Shield</h1>
+      <div className="grandma-container">
+        <img src="/stickers/grandma.png" className="grandma-sticker" alt="Grandma Sticker" />
+      </div>
+      
       <div className="transcript-box">
         {transcripts.length === 0 ? (
           <p className="placeholder-text">Waiting for transcripts...</p>
