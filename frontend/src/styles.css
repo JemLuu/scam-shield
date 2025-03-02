@@ -1,0 +1,76 @@
+/* Import a beautiful Google Font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f5f7fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
+}
+
+.app-container {
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.transcript-box {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  min-height: 150px;
+  max-height: 60vh;
+  overflow-y: auto;
+  transition: all 0.3s ease;
+}
+
+.placeholder-text {
+  font-size: 1rem;
+  color: #7f8c8d;
+  text-align: center;
+  padding: 20px;
+}
+
+.transcript-list {
+  list-style: none;
+  padding: 0;
+}
+
+.transcript-item {
+  font-size: 1.1rem;
+  padding: 10px;
+  border-bottom: 1px solid #ecf0f1;
+  word-wrap: break-word;
+  transition: background 0.3s ease;
+}
+
+.normal-text {
+  color: #2c3e50;
+}
+
+.scam-text {
+  color: #e74c3c;
+  font-weight: 600;
+  background: #ffebe6;
+  border-radius: 5px;
+  padding: 8px;
+  margin: 5px 0;
+  display: inline-block;
+}

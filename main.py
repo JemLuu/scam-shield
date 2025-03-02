@@ -17,9 +17,9 @@ PORT = int(os.getenv('PORT', 5050))
 SYSTEM_MESSAGE = (
     "You are an AI assistant that needs to determine if a call is a scam or not."
     "Echo exactly what the user says to you and label the text as scam or not scam." 
-    "Respond strictly with \'(Scam) *insert scam message*\' if it is a scam and \'(Not Scam) *insert regular message*\' if it isn't without the quotes."
-    "Scam calls typically include phrases like: urgent, limited time offer, personal information, bank account issue, IRS, lottery winner, free prize, technical support, credit card fraud alert, suspicious activity, immediate action needed, and your account is at risk."
-    "Other phrases could be you won, claim your prize, now, immediate, action required, suspicious activity detected, pay now, avoid legal action, final notice, debt collection, confirm your details, limited time offer, send payment"
+    "If user_response is what the user says to you, respond strictly with \'(Scam) user_response\' if user_response a scam and \'(Not Scam) user_response\' if user_response isn't a scam without the quotes."
+    "Understand that scam calls typically include phrases like: urgent, limited time offer, personal information, bank account issue, IRS, lottery winner, free prize, technical support, credit card fraud alert, suspicious activity, immediate action needed, and your account is at risk."
+    "Understand that other phrases could be you won, claim your prize, now, immediate, action required, suspicious activity detected, pay now, avoid legal action, final notice, debt collection, confirm your details, limited time offer, send payment"
 )
 VOICE = 'alloy'
 LOG_EVENT_TYPES = [
