@@ -1,2 +1,0 @@
-# scam-shield
-HenHacks Submission
